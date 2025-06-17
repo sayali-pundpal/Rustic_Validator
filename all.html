@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Rustic Validator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=EB+Garamond&family=Fira+Code&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #8d775f;
+      --secondary: #c9ad94;
+      --accent: #c9d8b6;
+      --light: #f7f1e3;
+      --dark: #5c4434;
+      --valid: #3c8c59;
+      --invalid: #b94d44;
+      --border: #dec8a0;
+      --card: rgba(255, 248, 238, 0.9);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: url('https://www.transparenttextures.com/patterns/beige-paper.png'), 
+                  linear-gradient(to bottom right, #f8f4e1, #e6d9c4);
+      background-blend-mode: multiply;
+      font-family: 'EB Garamond', serif;
+      color: var(--dark);
+    }
+
+    .header {
+      text-align: center;
+      padding: 2rem 0;
+      background: rgba(255, 255, 255, 0.7);
+      border-bottom: 2px dashed var(--border);
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3rem;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: var(--dark);
+      margin-top: 0.5rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 0.8rem 1.5rem;
+      background: var(--light);
+      border: 2px solid var(--border);
+      border-radius: 30px;
+      font-family: 'Pacifico', cursive;
+      font-size: 1.1rem;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 3px 3px 8px rgba(0,0,0,0.1);
+    }
+
+    .tab-btn:hover {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 8px 8px 20px rgba(84, 64, 40, 0.15);
+      margin-bottom: 3rem;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Welcome Tab Styles */
+    .welcome-card {
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .flower {
+      width: 80px;
+      margin-bottom: 1rem;
+      animation: rotate 8s infinite linear;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Greeter Tab Styles */
+    .greeter-input {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fefaf3;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .greeter-btn {
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+      border: none;
+      background: var(--primary);
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .greeter-btn:hover {
+      background: var(--secondary);
+    }
+
+    .greeting-result {
+      margin-top: 2rem;
+      font-size: 1.5rem;
+      color: var(--dark);
+      min-height: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    /* JSON Validator Styles */
+    .json-textarea {
+      width: 100%;
+      min-height: 200px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      font-family: 'Fira Code', monospace;
+      background-color: #fffefb;
+      resize: vertical;
+      font-size: 0.95rem;
+      color: var(--dark);
+      line-height: 1.5;
+    }
+
+    .json-btn {
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 14px;
+      background-color: var(--secondary);
+      color: white;
+      font-family: 'Pacifico', cursive;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0 0.5rem;
+    }
+
+    .json-btn:hover {
+      background-color: var(--primary);
+    }
+
+    .validation-result {
+      margin-top: 25px;
+      font-size: 1.2rem;
+      min-height: 1.5em;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .valid {
+      color: var(--valid);
+    }
+
+    .invalid {
+      color: var(--invalid);
+    }
+
+    /* API Console Styles */
+    .api-console {
+      background: rgba(255, 248, 238, 0.9);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .api-header {
+      background: var(--primary);
+      color: white;
+      padding: 1.5rem;
+      font-family: 'Pacifico', cursive;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .api-tab {
+      background: var(--accent);
+      padding: 1rem;
+      font-weight: bold;
+      text-align: center;
+      border-bottom: 1px solid #c0b5a0;
+    }
+
+    .api-body {
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .api-input {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid #d3c4b5;
+      border-radius: 10px;
+      font-size: 1rem;
+      background-color: #fffdf9;
+    }
+
+    .api-btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 2px 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .api-btn:hover {
+      background-color: var(--secondary);
+    }
+
+    .api-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .api-response {
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: #fefefe;
+      border: 1px solid #e3e0db;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+    }
+
+    .success {
+      border-left: 5px solid var(--valid);
+    }
+
+    .error {
+      border-left: 5px solid var(--invalid);
+    }
+
+    /* Flower decorations */
+    .flower-decoration {
+      position: fixed;
+      width: 60px;
+      opacity: 0.8;
+      z-index: -1;
+    }
+
+    .flower-1 {
+      top: 20px;
+      left: 20px;
+    }
+
+    .flower-2 {
+      bottom: 20px;
+      right: 20px;
+      transform: rotate(45deg);
+    }
+
+    .flower-3 {
+      top: 50%;
+      left: 10px;
+      transform: rotate(-15deg);
+    }
+
+    .flower-4 {
+      bottom: 30%;
+      right: 30px;
+      transform: rotate(30deg);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .tab-btn {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+      }
+      
+      .flower-decoration {
+        width: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flower Decorations -->
+  <img src="https://cdn-icons-png.flaticon.com/512/4825/4825038.png" class="flower-decoration flower-1" alt="flower">
+  <img src="https://cdn-icons-png.flaticon.com/512/4825/4825082.png" class="flower-decoration flower-2" alt="flower">
+  <img src="https://cdn-icons-png.flaticon.com/512/4825/4825038.png" class="flower-decoration flower-3" alt="flower">
+  <img src="https://cdn-icons-png.flaticon.com/512/4825/4825082.png" class="flower-decoration flower-4" alt="flower">
+
+  <div class="header">
+    <h1>The Rustic Validator</h1>
+    <p class="subtitle">A cozy collection of tools and greetings</p>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="welcome">Welcome</button>
+      <button class="tab-btn" data-tab="greeter">Greeter</button>
+      <button class="tab-btn" data-tab="json">JSON Validator</button>
+      <button class="tab-btn" data-tab="api">API Console</button>
+    </div>
+
+    <!-- Welcome Tab - Updated to remove greeting functionality -->
+    <div id="welcome" class="tab-content active">
+      <div class="welcome-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/4825/4825082.png" class="flower" alt="flower">
+        <h1>Welcome to The Rustic Validator</h1>
+        <p>Sayali Pundpal | Data Integration Internship</p>
+        <p>This is a cozy collection of tools and utilities for your needs.</p>
+        <p>Explore the other tabs to use our features:</p>
+        <ul style="text-align: left; display: inline-block;">
+          <li>Greeter - Get a personalized greeting</li>
+          <li>JSON Validator - Validate your JSON data</li>
+          <li>API Console - Test our greeting API</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Greeter Tab -->
+    <div id="greeter" class="tab-content">
+      <div style="max-width: 480px; margin: 0 auto; text-align: center; position: relative;">
+        <img class="flower-decoration" src="https://cdn-icons-png.flaticon.com/512/4825/4825038.png" alt="flower corner" style="width: 70px; top: -25px; left: -25px; position: absolute;">
+        <h1 style="font-family: 'Pacifico', cursive; color: var(--primary);">Hello There 🌼</h1>
+        <form id="greetForm">
+          <label for="greeterNameInput">What's your name?</label>
+          <input type="text" id="greeterNameInput" class="greeter-input" required placeholder="Type your name here...">
+          <button type="submit" class="greeter-btn">Greet Me</button>
+        </form>
+        <div id="greeterGreeting" class="greeting-result"></div>
+      </div>
+    </div>
+
+    <!-- JSON Validator Tab -->
+    <div id="json" class="tab-content">
+      <div style="max-width: 600px; margin: 0 auto;">
+        <h1 style="text-align: center; font-family: 'Pacifico', cursive; color: var(--primary);">🌿JSON Validator</h1>
+        <textarea id="jsonInput" class="json-textarea" placeholder='Enter your JSON here...'></textarea>
+        <div style="text-align: center; margin-top: 30px;">
+          <button id="validateBtn" class="json-btn">Validate</button>
+          <button id="jsonResetBtn" class="json-btn">Reset</button>
+        </div>
+        <div id="validationResult" class="validation-result"></div>
+      </div>
+    </div>
+
+    <!-- API Console Tab -->
+    <div id="api" class="tab-content">
+      <div class="api-console">
+        <div class="api-header">
+          ExactSpace API Console
+          <button id="authBtn" class="api-btn"><i class="mdi mdi-key"></i> Get API Key</button>
+        </div>
+
+        <div class="api-tab">
+          Greeting API
+        </div>
+
+        <div class="api-body">
+          <div id="greetTab">
+            <div class="form-group">
+              <label for="apiNameInput">Enter your name</label>
+              <input type="text" id="apiNameInput" class="api-input" placeholder="e.g., Sayali" />
+            </div>
+            <button id="greetBtn" class="api-btn">
+              <i class="mdi mdi-send"></i> Send Request
+            </button>
+            <div id="apiResponse" class="api-response" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching functionality
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        
+        // Update active tab button
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Show active tab content
+        tabContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Greeter Tab Functionality
+    document.getElementById('greetForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('greeterNameInput').value.trim();
+      const greeting = document.getElementById('greeterGreeting');
+
+      if (name) {
+        greeting.textContent = `Hello, ${name}! 🌸`;
+      } else {
+        greeting.textContent = "";
+      }
+    });
+
+    // JSON Validator Functionality
+    const jsonInput = document.getElementById('jsonInput');
+    const resultDiv = document.getElementById('validationResult');
+    const validateBtn = document.getElementById('validateBtn');
+    const jsonResetBtn = document.getElementById('jsonResetBtn');
+
+    validateBtn.addEventListener('click', () => {
+      try {
+        JSON.parse(jsonInput.value);
+        resultDiv.textContent = '✔ Valid JSON';
+        resultDiv.className = 'valid';
+      } catch (e) {
+        resultDiv.textContent = `✘ Invalid JSON: ${e.message.replace('JSON.parse: ', '')}`;
+        resultDiv.className = 'invalid';
+      }
+    });
+
+    jsonResetBtn.addEventListener('click', () => {
+      jsonInput.value = '';
+      resultDiv.textContent = '';
+      resultDiv.className = '';
+    });
+
+    // API Console Functionality
+    let apiToken = null;
+    const authBtn = document.getElementById('authBtn');
+    const greetBtn = document.getElementById('greetBtn');
+    const apiResponseDiv = document.getElementById('apiResponse');
+
+    authBtn.addEventListener('click', async () => {
+      authBtn.disabled = true;
+      authBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Authenticating...';
+      try {
+        const res = await fetch('http://localhost:3000/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'EXACT-API-KEY-123' })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        apiToken = data.token;
+        authBtn.innerHTML = `<i class="mdi mdi-check"></i> Authenticated`;
+        showApiResponse(data, true);
+      } catch (err) {
+        showApiResponse({ error: err.message }, false);
+        authBtn.innerHTML = '<i class="mdi mdi-key"></i> Get API Key';
+      } finally {
+        authBtn.disabled = false;
+      }
+    });
+
+    greetBtn.addEventListener('click', async () => {
+      if (!apiToken) {
+        showApiResponse({ error: "Please authenticate first" }, false);
+        return;
+      }
+
+      const name = document.getElementById('apiNameInput').value.trim();
+      if (!name) {
+        showApiResponse({ error: "Name is required" }, false);
+        return;
+      }
+
+      greetBtn.disabled = true;
+      greetBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Sending...';
+
+      try {
+        const res = await fetch('http://localhost:3000/api/greet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiToken}`
+          },
+          body: JSON.stringify({ name })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Request failed");
+
+        showApiResponse(data, true);
+      } catch (err) {
+        showApiResponse({ error: err.message }, false);
+      } finally {
+        greetBtn.disabled = false;
+        greetBtn.innerHTML = '<i class="mdi mdi-send"></i> Send Request';
+      }
+    });
+
+    function showApiResponse(data, isSuccess) {
+      apiResponseDiv.style.display = 'block';
+      apiResponseDiv.className = `api-response ${isSuccess ? 'success' : 'error'}`;
+      apiResponseDiv.textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>

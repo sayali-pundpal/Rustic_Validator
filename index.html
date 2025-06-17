@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ExactSpace | Welcome</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: url('https://www.transparenttextures.com/patterns/wood-pattern.png'), linear-gradient(to bottom right, #f8f4e1, #e6d9c4);
+      font-family: 'EB Garamond', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-blend-mode: multiply;
+    }
+
+    .card {
+      background: rgba(255, 248, 238, 0.85);
+      border: 2px solid #d6c6aa;
+      border-radius: 16px;
+      padding: 3rem 5rem;
+      box-shadow: 6px 6px 15px rgba(94, 74, 56, 0.2);
+      text-align: center;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3rem;
+      color: #5c4434;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #6d584b;
+      margin-top: 0.5rem;
+    }
+
+    .flower {
+      width: 60px;
+      margin-bottom: 1rem;
+      animation: rotate 8s infinite linear;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #nameInput {
+      margin-top: 1rem;
+      padding: 0.6rem;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #d6c6aa;
+      font-family: 'EB Garamond', serif;
+      font-size: 1rem;
+    }
+
+    .btn {
+      margin-top: 1rem;
+      padding: 0.5rem 1.2rem;
+      border: none;
+      background-color: #c9ad94;
+      color: white;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'EB Garamond', serif;
+    }
+
+    .btn:hover {
+      background-color: #b89a7e;
+    }
+
+    #greeting {
+      margin-top: 1.2rem;
+      font-size: 1.1rem;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      color: #5c4434;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="https://cdn-icons-png.flaticon.com/512/4825/4825082.png" class="flower" alt="flower">
+    <h1>The Rustic Validator</h1>
+    <p>Sayali Pundpal | Data Integration Internship</p>
+    
+    <input type="text" id="nameInput" placeholder="Enter your name" />
+    <div>
+      <button class="btn" onclick="greet()">Greet</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+    <p id="greeting"></p>
+  </div>
+
+  <!-- Reset Script -->
+  <script>
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('nameInput').value = '';
+      const greeting = document.getElementById('greeting');
+      greeting.style.opacity = '0';
+      setTimeout(() => greeting.textContent = '', 300);
+    });
+
+    function greet() {
+      const name = document.getElementById('nameInput').value.trim();
+      const greeting = document.getElementById('greeting');
+      if (name) {
+        greeting.textContent = `Welcome, ${name}! 🌼`;
+        greeting.style.opacity = '1';
+      } else {
+        greeting.textContent = `Please enter a name.`;
+        greeting.style.opacity = '1';
+      }
+    }
+  </script>
+</body>
+</html>

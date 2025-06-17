@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Validator | ExactSpace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fira+Code&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #7a5c46;
+      --secondary: #c3a88e;
+      --valid: #3c8c59;
+      --invalid: #b94d44;
+      --bg: #fffaf3;
+      --card: #fffefb;
+      --border: #d4c0ac;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: url('https://www.transparenttextures.com/patterns/beige-paper.png');
+      background-color: var(--bg);
+      font-family: 'Pacifico', cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background-color: rgba(253, 246, 227, 0.95);
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(120, 95, 70, 0.2);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h1 {
+      color: var(--primary);
+      margin: 0 0 30px 0;
+      font-size: 2.5rem;
+      text-shadow: 1px 1px 2px #d9c9b8;
+    }
+
+    .text-box-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      font-family: 'Fira Code', monospace;
+      background-color: var(--card);
+      resize: vertical;
+      font-size: 0.95rem;
+      color: var(--primary);
+      line-height: 1.5;
+      margin: 0 auto;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(195, 168, 142, 0.2);
+    }
+
+    .button-group {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 14px;
+      background-color: var(--secondary);
+      color: white;
+      font-family: 'Pacifico', cursive;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    #validationResult {
+      margin-top: 25px;
+      font-size: 1.2rem;
+      min-height: 1.5em;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .valid {
+      color: var(--valid);
+    }
+
+    .invalid {
+      color: var(--invalid);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌿JSON Validator</h1>
+    <div class="text-box-wrapper">
+      <textarea id="jsonInput" placeholder='Enter your JSON here...'></textarea>
+    </div>
+    <div class="button-group">
+      <button id="validateBtn">Validate</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div id="validationResult"></div>
+  </div>
+
+  <script>
+    const jsonInput = document.getElementById('jsonInput');
+    const resultDiv = document.getElementById('validationResult');
+    const validateBtn = document.getElementById('validateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    validateBtn.addEventListener('click', () => {
+      try {
+        JSON.parse(jsonInput.value);
+        resultDiv.textContent = '✔ Valid JSON';
+        resultDiv.className = 'valid';
+      } catch (e) {
+        resultDiv.textContent = `✘ Invalid JSON: ${e.message.replace('JSON.parse: ', '')}`;
+        resultDiv.className = 'invalid';
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      jsonInput.value = '';
+      resultDiv.textContent = '';
+      resultDiv.className = '';
+    });
+  </script>
+</body>
+</html>
